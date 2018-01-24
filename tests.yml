@@ -1,0 +1,11 @@
+---
+# Tests suitable to run in a classic environment
+- hosts: localhost
+  tags:
+  - classic
+  roles:
+  - role: standard-test-beakerlib
+    tests:
+    - tests
+    required_packages:
+    - e2fsprogs
