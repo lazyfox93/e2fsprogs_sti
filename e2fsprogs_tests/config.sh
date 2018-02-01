@@ -16,5 +16,7 @@ DEBUGFS_EXE="debugfs"
 TEST_BITS="debugfs"
 RESIZE2FS_EXE="resize2fs"
 E2UNDO_EXE="e2undo"
-
-SRCDIR="./e2fsprogs/tests"/
+E2UNDO=$E2UNDO_EXE
+SRCDIR="/usr/local/bin/e2fsprogs_tests/e2fsprogs-1.43.8/tests"
+cmd_dir=$SRCDIR
+CLEAN_OUTPUT="sed -f $cmd_dir/filter.sed"
