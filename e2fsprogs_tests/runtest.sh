@@ -3,18 +3,20 @@
 
 rlJournalStart
     rlPhaseStartSetup
+        rlRun "export PKG_VER=$(rpm -q e2fsprogs | cut -d "-" -f 2)"
         rlRun "export TEST_CONFIG=/usr/local/bin/e2fsprogs_tests/config.sh"
-        rlRun "curl -O https://www.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/v1.43.8/e2fsprogs-1.43.8.tar.gz"
-        rlRun "tar -zxvf e2fsprogs-1.43.8.tar.gz e2fsprogs-1.43.8/tests"
-        echo $(pwd)
-        rlRun "cd e2fsprogs-1.43.8/tests "
+        rlRun "curl -O https://www.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/v${PKG_VER}/e2fsprogs-${PKG_VER}.tar.gz"
+        rlRun "tar -zxvf e2fsprogs-${PKG_VER}.tar.gz e2fsprogs-${PKG_VER}"
+        rlRun "cd e2fsprogs-${PKG_VER}"
+        rlRun "mkdir build && cd build"
+        rlRun "../configure"
+        rlRun "make"
+        rlRun "cp -R -u ../tests/* ./tests"
         rlRun "chmod +x ./test_one.in"
-        echo $(pwd)
     rlPhaseEnd
     rlPhaseStartTest
-        touch /tmp/artifacts/report.log
+        rlRun "touch /tmp/artifacts/report.log"
         for test in $(ls -a | grep ^[dfijmrtu]_.); do
-            echo $(pwd)
             ./test_one.in $test
             if [[ -f "$test".ok ]]
             then
@@ -26,13 +28,13 @@ rlJournalStart
                 echo "$test SKIPPED" >> /tmp/artifacts/report.log
             fi
         done
-        echo "PASSED: $(grep PASSED /tmp/artifacts/report.log | wc -l)" >> /tmp/artifacts/report.log
-        echo "FAIILED: $(grep FAILED /tmp/artifacts/report.log | wc -l)" >> /tmp/artifacts/report.log
-        echo "SKIPPED: $(grep SKIPPED /tmp/artifacts/report.log | wc -l)" >> /tmp/artifacts/report.log
-        rlRun 'grep "FAILED: 0" /tmp/artifacts/report.log' 0
+        rlRun "n_passed=$(grep -w PASSED -c /tmp/artifacts/report.log)"
+        rlRun "n_failed=$(grep -w FAILED -c /tmp/artifacts/report.log)"
+        rlRun "n_skipped=$(grep -w SKIPPED -c /tmp/artifacts/report.log)"
+        rlRun 'brief_result="PASSED: ${n_passed} FAIILED: ${n_failed} SKIPPED: ${n_skipped}"'
+        rlRun 'echo $brief_result > /tmp/artifacts/brief_report.log'
+        rlRun 'grep "FAILED: 0" /tmp/artifacts/brief_report.log' 0
     rlPhaseEnd
-    rlPhaseStartCleanup
-        rlRun "rm -rf /tmp/artifacts"
-        rlRun "rm -rf /tmp/e2fsprogs*"
+    rlPhaseStartCleanupcd 
     rlPhaseEnd
 rlJournalEnd
