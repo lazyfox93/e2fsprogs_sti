@@ -9,3 +9,4 @@
     - e2fsprogs_tests
     required_packages:
     - e2fsprogs
+    - gcc

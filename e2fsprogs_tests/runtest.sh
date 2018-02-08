@@ -12,6 +12,7 @@ rlJournalStart
         rlRun "../configure"
         rlRun "make"
         rlRun "cp -R -u ../tests/* ./tests"
+        rlRun "cd tests"
         rlRun "chmod +x ./test_one.in"
     rlPhaseEnd
     rlPhaseStartTest
@@ -35,6 +36,6 @@ rlJournalStart
         rlRun 'echo $brief_result > /tmp/artifacts/brief_report.log'
         rlRun 'grep "FAILED: 0" /tmp/artifacts/brief_report.log' 0
     rlPhaseEnd
-    rlPhaseStartCleanupcd 
+    rlPhaseStartCleanup
     rlPhaseEnd
 rlJournalEnd
